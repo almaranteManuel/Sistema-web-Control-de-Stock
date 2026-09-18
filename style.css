@@ -1,1 +1,193 @@
-NO USES IA TE DIJE
+/* Mobile-first: base styles target small screens,
+   media queries progressively enhance larger ones. */
+
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #1f2430;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --error: #dc2626;
+  --border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  padding: 1.25rem 1rem 0.5rem;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+main {
+  padding: 0.75rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+/* Single column stack on small screens */
+form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+}
+
+.field input.invalid,
+.field select.invalid {
+  border-color: var(--error);
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.78rem;
+  min-height: 1em;
+}
+
+/* Explicit action row: always below the fields, never floating beside one */
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+button {
+  width: 100%;
+  padding: 0.55rem 1.1rem;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+.feedback {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+/* Horizontal scroll only on the table, never the whole page */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: #f9fafb;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Larger screens: two-column form, roomier spacing */
+@media (min-width: 640px) {
+  header {
+    padding-top: 1.5rem;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+  }
+
+  .form-actions {
+    justify-self: end;
+  }
+
+  button {
+    width: auto;
+  }
+}
