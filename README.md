@@ -46,6 +46,8 @@ Sin login real en MVP (fuera de alcance). Rol simulado con selector simple si ha
 
 **Limitaciones:** 4 personas, desde cero, ~3 semanas útiles, solo front, sin backend, tiempo parcial por parciales.
 
+**Convención de diseño (mobile-first):** toda la UI se construye responsive mobile-first: estilos base pensados para celular y media queries que mejoran progresivamente pantallas más grandes. Cada HU se entrega responsiva desde su implementación; HU13 queda como pulido (modo oscuro y refinos), no como base del responsive.
+
 ## 4. Backlog (13 ítems)
 
 Escala: Baja=2h / Media=5h / Alta=8h. Total estimado: 57h.
