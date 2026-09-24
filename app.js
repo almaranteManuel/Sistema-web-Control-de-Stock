@@ -2,7 +2,8 @@
    and shows the product in the list. */
 
 const STORAGE_KEY = 'stock:productos';
-
+const filtroNombre = document.querySelector('#filtro-nombre');
+const filtroCategoria = document.querySelector('#filtro-categoria');
 const form = document.querySelector('#form-producto');
 const tabla = document.querySelector('#tabla-productos');
 const tablaBody = tabla.querySelector('tbody');
@@ -69,13 +70,28 @@ function formatDate(isoDate) {
 
 function renderList() {
   const products = loadProducts();
+
+  const nombreBuscado = filtroNombre.value.trim().toLowerCase();
+  const categoriaBuscada = filtroCategoria.value;
+
+  const productosFiltrados = products.filter((product) => {
+    const coincideNombre =
+      product.nombre.toLowerCase().includes(nombreBuscado);
+
+    const coincideCategoria =
+      categoriaBuscada === '' || product.categoria === categoriaBuscada;
+
+    return coincideNombre && coincideCategoria;
+  });
+
   tablaBody.replaceChildren();
 
-  tabla.hidden = products.length === 0;
-  tablaVacia.hidden = products.length > 0;
+  tabla.hidden = productosFiltrados.length === 0;
+  tablaVacia.hidden = productosFiltrados.length > 0;
 
-  for (const product of products) {
+  for (const product of productosFiltrados) {
     const row = document.createElement('tr');
+
     const values = [
       product.nombre,
       product.categoria,
@@ -89,9 +105,12 @@ function renderList() {
       cell.textContent = value;
       row.appendChild(cell);
     }
+
     tablaBody.appendChild(row);
   }
 }
+
+
 
 function showFeedback(message) {
   feedback.textContent = message;
@@ -131,5 +150,9 @@ form.addEventListener('submit', (event) => {
   renderList();
   showFeedback(`"${product.nombre}" guardado correctamente.`);
 });
+
+
+filtroNombre.addEventListener('input', renderList);
+filtroCategoria.addEventListener('change', renderList);
 
 renderList();
