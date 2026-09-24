@@ -60,6 +60,27 @@
 
     <section class="card">
       <h2>Productos cargados</h2>
+          <div class="filters">
+          <div class="field">
+          <label for="filtro-nombre">Buscar por nombre</label>
+          <input
+          type="search"
+          id="filtro-nombre"
+          placeholder="Ej: Coca Cola"
+          />
+          </div>
+
+          <div class="field">
+          <label for="filtro-categoria">Categoría</label>
+          <select id="filtro-categoria">
+          <option value="">Todas las categorías</option>
+          <option value="Comestibles">Comestibles</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Limpieza">Limpieza</option>
+          <option value="Otros">Otros</option>
+            </select>
+          </div>
+        </div>
       <p id="feedback" class="feedback" hidden></p>
       <div class="table-wrap">
         <table id="tabla-productos" hidden>
