@@ -1,5 +1,6 @@
 /* HU1: alta de producto — validates fields, saves to localStorage
-   and shows the product in the list. */
+   and shows the product in the list.
+   HU4: allows adding and subtracting one unit from the stock. */
 
 const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
@@ -68,6 +69,25 @@ function formatDate(isoDate) {
   return `${day}/${month}/${year}`;
 }
 
+function changeQuantity(productId, change) {
+  const products = loadProducts();
+  const product = products.find((item) => item.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  if (change < 0 && product.cantidad === 0) {
+    showFeedback(`"${product.nombre}" ya tiene cantidad 0.`);
+    return;
+  }
+
+  product.cantidad += change;
+  saveProducts(products);
+  renderList();
+  showFeedback(`Cantidad de "${product.nombre}" actualizada.`);
+}
+
 function renderList() {
   const products = loadProducts();
 
@@ -106,6 +126,28 @@ function renderList() {
       row.appendChild(cell);
     }
 
+    const actionsCell = document.createElement('td');
+    actionsCell.className = 'product-actions';
+
+    const subtractButton = document.createElement('button');
+    subtractButton.type = 'button';
+    subtractButton.className = 'quantity-button';
+    subtractButton.dataset.action = 'subtract';
+    subtractButton.dataset.id = product.id;
+    subtractButton.textContent = '-1';
+    subtractButton.title = `Descontar una unidad de ${product.nombre}`;
+    subtractButton.disabled = product.cantidad === 0;
+
+    const addButton = document.createElement('button');
+    addButton.type = 'button';
+    addButton.className = 'quantity-button';
+    addButton.dataset.action = 'add';
+    addButton.dataset.id = product.id;
+    addButton.textContent = '+1';
+    addButton.title = `Sumar una unidad a ${product.nombre}`;
+
+    actionsCell.append(subtractButton, addButton);
+    row.appendChild(actionsCell);
     tablaBody.appendChild(row);
   }
 }
@@ -154,5 +196,15 @@ form.addEventListener('submit', (event) => {
 
 filtroNombre.addEventListener('input', renderList);
 filtroCategoria.addEventListener('change', renderList);
+
+tablaBody.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) {
+    return;
+  }
+
+  const change = button.dataset.action === 'add' ? 1 : -1;
+  changeQuantity(button.dataset.id, change);
+});
 
 renderList();

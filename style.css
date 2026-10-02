@@ -144,6 +144,23 @@ td {
   border-bottom: 1px solid var(--border);
 }
 
+.product-actions {
+  white-space: nowrap;
+}
+
+.quantity-button {
+  width: auto;
+  min-width: 2.5rem;
+  padding: 0.4rem 0.55rem;
+  margin-right: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.quantity-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 th {
   background: #f9fafb;
   font-size: 0.8rem;

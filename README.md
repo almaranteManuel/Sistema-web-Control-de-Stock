@@ -57,7 +57,7 @@ Escala: Baja=2h / Media=5h / Alta=8h. Total estimado: 57h.
 | HU1 | Como encargado quiero alta de producto (nombre, categoría, cantidad, mínimo, vencimiento) | Alta | 5h | Pendiente | Valida campos, guarda, aparece en lista |
 | HU2 | Como usuario quiero ver lista de stock | Alta | 2h | Pendiente | Tabla carga desde storage |
 | HU3 | Como usuario quiero buscar/filtrar por nombre/categoría | Alta | 2h | Pendiente | Filtro funciona en vivo |
-| HU4 | Como usuario quiero sumar/descontar cantidad | Alta | 5h | Pendiente | No permite negativo, actualiza vista |
+| HU4 | Como usuario quiero sumar/descontar cantidad | Alta | 5h | Finalizada | No permite negativo, actualiza vista |
 | HU5 | Como encargado quiero alerta faltantes (stock<=mínimo) | Alta | 5h | Pendiente | Resalta en rojo + contador |
 | HU6 | Como encargado quiero alerta vencimiento próximo 7 días | Alta | 5h | Pendiente | Resalta amarillo + contador |
 | HU7 | Como encargado quiero lista de compras automática | Media | 5h | Pendiente | Genera desde faltantes |
