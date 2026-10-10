@@ -156,6 +156,10 @@ td {
   font-size: 0.85rem;
 }
 
+.delete-button {
+  background: #dc2626;
+}
+
 .quantity-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
