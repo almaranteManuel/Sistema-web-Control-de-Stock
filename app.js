@@ -1,6 +1,7 @@
 /* HU1: alta de producto — validates fields, saves to localStorage
    and shows the product in the list.
-   HU4: allows adding and subtracting one unit from the stock. */
+   HU4: allows adding and subtracting one unit from the stock.
+   HU9: deletes a product after asking for confirmation. */
 
 const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
@@ -88,6 +89,23 @@ function changeQuantity(productId, change) {
   showFeedback(`Cantidad de "${product.nombre}" actualizada.`);
 }
 
+function deleteProduct(productId) {
+  const products = loadProducts();
+  const product = products.find((item) => item.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  if (!confirm(`¿Seguro que querés eliminar "${product.nombre}"?`)) {
+    return;
+  }
+
+  saveProducts(products.filter((item) => item.id !== productId));
+  renderList();
+  showFeedback(`"${product.nombre}" eliminado.`);
+}
+
 function renderList() {
   const products = loadProducts();
 
@@ -146,7 +164,15 @@ function renderList() {
     addButton.textContent = '+1';
     addButton.title = `Sumar una unidad a ${product.nombre}`;
 
-    actionsCell.append(subtractButton, addButton);
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'quantity-button delete-button';
+    deleteButton.dataset.action = 'delete';
+    deleteButton.dataset.id = product.id;
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.title = `Eliminar ${product.nombre}`;
+
+    actionsCell.append(subtractButton, addButton, deleteButton);
     row.appendChild(actionsCell);
     tablaBody.appendChild(row);
   }
@@ -200,6 +226,11 @@ filtroCategoria.addEventListener('change', renderList);
 tablaBody.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-action]');
   if (!button) {
+    return;
+  }
+
+  if (button.dataset.action === 'delete') {
+    deleteProduct(button.dataset.id);
     return;
   }
 
