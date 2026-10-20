@@ -7,10 +7,14 @@ const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
 const filtroCategoria = document.querySelector('#filtro-categoria');
 const form = document.querySelector('#form-producto');
+const formTitle = document.querySelector('#titulo-formulario');
+const submitButton = document.querySelector('#guardar-producto');
+const cancelEditButton = document.querySelector('#cancelar-edicion');
 const tabla = document.querySelector('#tabla-productos');
 const tablaBody = tabla.querySelector('tbody');
 const tablaVacia = document.querySelector('#tabla-vacia');
 const feedback = document.querySelector('#feedback');
+let editingProductId = null;
 
 function loadProducts() {
   try {
@@ -102,8 +106,39 @@ function deleteProduct(productId) {
   }
 
   saveProducts(products.filter((item) => item.id !== productId));
+  if (editingProductId === productId) {
+    form.reset();
+    clearErrors();
+    leaveEditMode();
+  }
   renderList();
   showFeedback(`"${product.nombre}" eliminado.`);
+}
+
+function enterEditMode(productId) {
+  const product = loadProducts().find((item) => item.id === productId);
+  if (!product) {
+    return;
+  }
+
+  editingProductId = product.id;
+  form.elements.nombre.value = product.nombre;
+  form.elements.categoria.value = product.categoria;
+  form.elements.cantidad.value = product.cantidad;
+  form.elements.minimo.value = product.minimo;
+  form.elements.vencimiento.value = product.vencimiento;
+  clearErrors();
+  formTitle.textContent = 'Editar producto';
+  submitButton.textContent = 'Guardar cambios';
+  cancelEditButton.hidden = false;
+  form.elements.nombre.focus();
+}
+
+function leaveEditMode() {
+  editingProductId = null;
+  formTitle.textContent = 'Alta de producto';
+  submitButton.textContent = 'Guardar producto';
+  cancelEditButton.hidden = true;
 }
 
 function renderList() {
@@ -164,6 +199,14 @@ function renderList() {
     addButton.textContent = '+1';
     addButton.title = `Sumar una unidad a ${product.nombre}`;
 
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.className = 'quantity-button';
+    editButton.dataset.action = 'edit';
+    editButton.dataset.id = product.id;
+    editButton.textContent = 'Editar';
+    editButton.title = `Editar ${product.nombre}`;
+
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.className = 'quantity-button delete-button';
@@ -172,7 +215,7 @@ function renderList() {
     deleteButton.textContent = 'Eliminar';
     deleteButton.title = `Eliminar ${product.nombre}`;
 
-    actionsCell.append(subtractButton, addButton, deleteButton);
+    actionsCell.append(subtractButton, addButton, editButton, deleteButton);
     row.appendChild(actionsCell);
     tablaBody.appendChild(row);
   }
@@ -200,8 +243,7 @@ form.addEventListener('submit', (event) => {
     return;
   }
 
-  const product = {
-    id: crypto.randomUUID(),
+  const productValues = {
     nombre: form.elements.nombre.value.trim(),
     categoria: form.elements.categoria.value.trim(),
     cantidad: Number(form.elements.cantidad.value),
@@ -210,13 +252,42 @@ form.addEventListener('submit', (event) => {
   };
 
   const products = loadProducts();
-  products.push(product);
+  const wasEditing = editingProductId !== null;
+  let product;
+
+  if (editingProductId) {
+    const productIndex = products.findIndex((item) => item.id === editingProductId);
+    if (productIndex === -1) {
+      form.reset();
+      clearErrors();
+      leaveEditMode();
+      showFeedback('El producto ya no existe. Volvé a seleccionarlo para editar.');
+      renderList();
+      return;
+    }
+
+    product = { ...products[productIndex], ...productValues, id: editingProductId };
+    products[productIndex] = product;
+  } else {
+    product = { id: crypto.randomUUID(), ...productValues };
+    products.push(product);
+  }
+
   saveProducts(products);
 
   form.reset();
+  clearErrors();
+  leaveEditMode();
   form.elements.nombre.focus();
   renderList();
-  showFeedback(`"${product.nombre}" guardado correctamente.`);
+  showFeedback(`"${product.nombre}" ${wasEditing ? 'actualizado' : 'guardado'} correctamente.`);
+});
+
+cancelEditButton.addEventListener('click', () => {
+  form.reset();
+  clearErrors();
+  leaveEditMode();
+  form.elements.nombre.focus();
 });
 
 
@@ -231,6 +302,15 @@ tablaBody.addEventListener('click', (event) => {
 
   if (button.dataset.action === 'delete') {
     deleteProduct(button.dataset.id);
+    return;
+  }
+
+  if (button.dataset.action === 'edit') {
+    enterEditMode(button.dataset.id);
+    return;
+  }
+
+  if (button.dataset.action !== 'add' && button.dataset.action !== 'subtract') {
     return;
   }
 
