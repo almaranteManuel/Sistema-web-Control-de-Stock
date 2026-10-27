@@ -1,6 +1,7 @@
 /* HU1: alta de producto — validates fields, saves to localStorage
    and shows the product in the list.
    HU4: allows adding and subtracting one unit from the stock.
+   HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
    HU9: deletes a product after asking for confirmation. */
 
 const STORAGE_KEY = 'stock:productos';
@@ -14,6 +15,9 @@ const tabla = document.querySelector('#tabla-productos');
 const tablaBody = tabla.querySelector('tbody');
 const tablaVacia = document.querySelector('#tabla-vacia');
 const feedback = document.querySelector('#feedback');
+const alertaVencimientos = document.querySelector('#alerta-vencimientos');
+const contadorVencimientos = document.querySelector('#contador-vencimientos');
+const contadorVencimientoSingular = document.querySelector('#contador-vencimiento');
 let editingProductId = null;
 
 function loadProducts() {
@@ -72,6 +76,24 @@ function validateForm() {
 function formatDate(isoDate) {
   const [year, month, day] = isoDate.split('-');
   return `${day}/${month}/${year}`;
+}
+
+function getDaysUntilExpiration(isoDate) {
+  if (!isoDate) {
+    return Infinity;
+  }
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const expDate = new Date(year, month - 1, day);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  expDate.setHours(0, 0, 0, 0);
+  const diffTime = expDate.getTime() - today.getTime();
+  return Math.round(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function isExpiringSoon(isoDate) {
+  const days = getDaysUntilExpiration(isoDate);
+  return days <= 7;
 }
 
 function changeQuantity(productId, change) {
@@ -144,6 +166,19 @@ function leaveEditMode() {
 function renderList() {
   const products = loadProducts();
 
+  const countVencimientos = products.filter((item) =>
+    isExpiringSoon(item.vencimiento)
+  ).length;
+
+  if (alertaVencimientos) {
+    alertaVencimientos.hidden = countVencimientos === 0;
+  }
+  if (contadorVencimientoSingular) {
+    contadorVencimientoSingular.textContent = String(countVencimientos);
+  } else if (contadorVencimientos) {
+    contadorVencimientos.textContent = String(countVencimientos);
+  }
+
   const nombreBuscado = filtroNombre.value.trim().toLowerCase();
   const categoriaBuscada = filtroCategoria.value;
 
@@ -164,6 +199,10 @@ function renderList() {
 
   for (const product of productosFiltrados) {
     const row = document.createElement('tr');
+
+    if (isExpiringSoon(product.vencimiento)) {
+      row.classList.add('vencimiento-proximo', 'alerta-vencimiento');
+    }
 
     const values = [
       product.nombre,
