@@ -2,6 +2,7 @@
    and shows the product in the list.
    HU4: allows adding and subtracting one unit from the stock.
    HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
+   HU7: lista de compras automática generada desde los faltantes.
    HU9: deletes a product after asking for confirmation. */
 
 const STORAGE_KEY = 'stock:productos';
@@ -14,6 +15,9 @@ const cancelEditButton = document.querySelector('#cancelar-edicion');
 const tabla = document.querySelector('#tabla-productos');
 const tablaBody = tabla.querySelector('tbody');
 const tablaVacia = document.querySelector('#tabla-vacia');
+const tablaCompras = document.querySelector('#tabla-compras');
+const tablaComprasBody = tablaCompras.querySelector('tbody');
+const listaComprasVacia = document.querySelector('#lista-compras-vacia');
 const feedback = document.querySelector('#feedback');
 const alertaVencimientos = document.querySelector('#alerta-vencimientos');
 const contadorVencimientos = document.querySelector('#contador-vencimientos');
@@ -94,6 +98,47 @@ function getDaysUntilExpiration(isoDate) {
 function isExpiringSoon(isoDate) {
   const days = getDaysUntilExpiration(isoDate);
   return days <= 7;
+}
+
+/* HU7: la lista de compras toma los productos faltantes (stock por debajo
+   del mínimo) y sugiere comprar lo que falta para volver al mínimo.
+   Un producto que está justo en el mínimo no entra en la lista:
+   no hace falta comprar nada. */
+function getShoppingListItems(products) {
+  return products
+    .filter((item) => item.cantidad < item.minimo)
+    .map((item) => ({ ...item, comprar: item.minimo - item.cantidad }));
+}
+
+function renderShoppingList() {
+  const items = getShoppingListItems(loadProducts());
+
+  tablaCompras.hidden = items.length === 0;
+  listaComprasVacia.hidden = items.length > 0;
+
+  tablaComprasBody.replaceChildren();
+
+  for (const item of items) {
+    const row = document.createElement('tr');
+
+    const values = [
+      item.nombre,
+      item.cantidad,
+      item.minimo,
+      item.comprar,
+    ];
+
+    values.forEach((value, index) => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      if (index === values.length - 1) {
+        cell.className = 'comprar-cantidad';
+      }
+      row.appendChild(cell);
+    });
+
+    tablaComprasBody.appendChild(row);
+  }
 }
 
 function changeQuantity(productId, change) {
@@ -258,6 +303,8 @@ function renderList() {
     row.appendChild(actionsCell);
     tablaBody.appendChild(row);
   }
+
+  renderShoppingList();
 }
 
 

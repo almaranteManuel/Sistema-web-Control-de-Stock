@@ -106,6 +106,30 @@
       </div>
       <p id="tabla-vacia" class="empty">Todavía no hay productos cargados.</p>
     </section>
+
+    <section class="card">
+      <h2>Lista de compras</h2>
+      <p class="lista-compras-descripcion">
+        Se genera automáticamente con los productos faltantes: sugiere comprar
+        lo necesario para volver al stock mínimo.
+      </p>
+      <div class="table-wrap">
+        <table id="tabla-compras" hidden>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Stock actual</th>
+              <th>Mínimo</th>
+              <th>Comprar</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="lista-compras-vacia" class="empty">
+        No hay faltantes: nada para comprar por ahora.
+      </p>
+    </section>
   </main>
 
   <script src="app.js"></script>
