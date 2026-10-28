@@ -1,6 +1,7 @@
 /* HU1: alta de producto — validates fields, saves to localStorage
    and shows the product in the list.
    HU4: allows adding and subtracting one unit from the stock.
+   HU5: alerta faltantes (stock <= mínimo) — resalta en rojo + contador.
    HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
    HU9: deletes a product after asking for confirmation. */
 
@@ -18,6 +19,8 @@ const feedback = document.querySelector('#feedback');
 const alertaVencimientos = document.querySelector('#alerta-vencimientos');
 const contadorVencimientos = document.querySelector('#contador-vencimientos');
 const contadorVencimientoSingular = document.querySelector('#contador-vencimiento');
+const alertaFaltantes = document.querySelector('#alerta-faltantes');
+const contadorFaltantes = document.querySelector('#contador-faltantes');
 let editingProductId = null;
 
 function loadProducts() {
@@ -94,6 +97,11 @@ function getDaysUntilExpiration(isoDate) {
 function isExpiringSoon(isoDate) {
   const days = getDaysUntilExpiration(isoDate);
   return days <= 7;
+}
+
+/* HU5: un producto está faltante cuando su stock llega o baja del mínimo. */
+function isLowStock(product) {
+  return product.cantidad <= product.minimo;
 }
 
 function changeQuantity(productId, change) {
@@ -179,6 +187,15 @@ function renderList() {
     contadorVencimientos.textContent = String(countVencimientos);
   }
 
+  const countFaltantes = products.filter((item) => isLowStock(item)).length;
+
+  if (alertaFaltantes) {
+    alertaFaltantes.hidden = countFaltantes === 0;
+  }
+  if (contadorFaltantes) {
+    contadorFaltantes.textContent = String(countFaltantes);
+  }
+
   const nombreBuscado = filtroNombre.value.trim().toLowerCase();
   const categoriaBuscada = filtroCategoria.value;
 
@@ -202,6 +219,10 @@ function renderList() {
 
     if (isExpiringSoon(product.vencimiento)) {
       row.classList.add('vencimiento-proximo', 'alerta-vencimiento');
+    }
+
+    if (isLowStock(product)) {
+      row.classList.add('faltante');
     }
 
     const values = [

@@ -195,6 +195,38 @@ tr.alerta-vencimiento:hover td {
   background-color: #fef08a;
 }
 
+/* HU5: Alerta de faltantes (stock <= minimo) */
+.alerta-faltantes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.alerta-faltantes[hidden] {
+  display: none;
+}
+
+/* HU5: Resalta en rojo las filas faltantes.
+   Si ademas vence pronto, el rojo gana por sobre el amarillo. */
+tr.faltante,
+tr.faltante td {
+  background-color: #fee2e2;
+  color: #7f1d1d;
+}
+
+tr.faltante:hover,
+tr.faltante:hover td {
+  background-color: #fecaca;
+}
+
 .product-actions {
   white-space: nowrap;
 }
