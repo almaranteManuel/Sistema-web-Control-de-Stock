@@ -310,6 +310,23 @@ td.comprar-cantidad {
   font-size: 0.78rem;
 }
 
+/* HU12: acciones de exportar/importar datos en JSON. */
+.datos-descripcion {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.datos-acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.datos-acciones button {
+  width: auto;
+}
+
 /* Larger screens: two-column form, roomier spacing */
 @media (min-width: 640px) {
   header {
