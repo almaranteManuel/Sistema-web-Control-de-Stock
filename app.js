@@ -5,7 +5,9 @@
    HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
    HU7: lista de compras automática generada desde los faltantes.
    HU9: deletes a product after asking for confirmation.
-   HU10: marcar comprado repone el stock del faltante a su mínimo. */
+   HU10: marcar comprado repone el stock del faltante a su mínimo.
+   HU11: resumen/dashboard con tarjetas de números reales.
+   HU12: exportar e importar los datos en formato JSON. */
 
 const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
@@ -26,6 +28,13 @@ const contadorVencimientos = document.querySelector('#contador-vencimientos');
 const contadorVencimientoSingular = document.querySelector('#contador-vencimiento');
 const alertaFaltantes = document.querySelector('#alerta-faltantes');
 const contadorFaltantes = document.querySelector('#contador-faltantes');
+const resumenProductos = document.querySelector('#resumen-productos');
+const resumenUnidades = document.querySelector('#resumen-unidades');
+const resumenFaltantes = document.querySelector('#resumen-faltantes');
+const resumenVencidos = document.querySelector('#resumen-vencidos');
+const exportarDatosButton = document.querySelector('#exportar-datos');
+const importarDatosButton = document.querySelector('#importar-datos');
+const archivoImportar = document.querySelector('#archivo-importar');
 let editingProductId = null;
 
 function loadProducts() {
@@ -247,6 +256,34 @@ function leaveEditMode() {
   cancelEditButton.hidden = true;
 }
 
+/* HU11: tarjetas del resumen con números reales calculados de los productos. */
+function renderResumen() {
+  const products = loadProducts();
+
+  const totalProductos = products.length;
+  const totalUnidades = products.reduce(
+    (sum, item) => sum + item.cantidad,
+    0
+  );
+  const totalFaltantes = products.filter((item) => isLowStock(item)).length;
+  const totalVencidos = products.filter((item) =>
+    isExpiringSoon(item.vencimiento)
+  ).length;
+
+  if (resumenProductos) {
+    resumenProductos.textContent = String(totalProductos);
+  }
+  if (resumenUnidades) {
+    resumenUnidades.textContent = String(totalUnidades);
+  }
+  if (resumenFaltantes) {
+    resumenFaltantes.textContent = String(totalFaltantes);
+  }
+  if (resumenVencidos) {
+    resumenVencidos.textContent = String(totalVencidos);
+  }
+}
+
 function renderList() {
   const products = loadProducts();
 
@@ -357,6 +394,7 @@ function renderList() {
   }
 
   renderShoppingList();
+  renderResumen();
 }
 
 
@@ -368,6 +406,90 @@ function showFeedback(message) {
     feedback.hidden = true;
   }, 3000);
 }
+
+function isValidImportedItem(item) {
+  if (!item || typeof item !== 'object') {
+    return false;
+  }
+  if (typeof item.nombre !== 'string' || !item.nombre.trim()) {
+    return false;
+  }
+  if (item.cantidad === undefined || !Number.isInteger(Number(item.cantidad)) || Number(item.cantidad) < 0) {
+    return false;
+  }
+  if (item.minimo !== undefined && (!Number.isInteger(Number(item.minimo)) || Number(item.minimo) < 0)) {
+    return false;
+  }
+  if (item.vencimiento !== undefined && typeof item.vencimiento !== 'string') {
+    return false;
+  }
+  return true;
+}
+
+function exportarDatos() {
+  const products = loadProducts();
+  if (products.length === 0) {
+    showFeedback('No hay datos para exportar.');
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'stock-productos.json';
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarDatos(file) {
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    let parsed;
+    try {
+      parsed = JSON.parse(reader.result);
+    } catch {
+      showFeedback('El archivo no tiene un formato válido.');
+      return;
+    }
+
+    if (!Array.isArray(parsed) || !parsed.every(isValidImportedItem)) {
+      showFeedback('El archivo no tiene un formato válido.');
+      return;
+    }
+
+    const items = parsed.map((item) => ({
+      id: typeof item.id === 'string' && item.id ? item.id : crypto.randomUUID(),
+      nombre: item.nombre.trim(),
+      cantidad: Number(item.cantidad),
+      minimo: item.minimo === undefined ? 0 : Number(item.minimo),
+      vencimiento: item.vencimiento === undefined ? '' : item.vencimiento,
+    }));
+
+    saveProducts(items);
+    renderList();
+    showFeedback(`"${items.length}" productos importados correctamente.`);
+  };
+  reader.onerror = () => {
+    showFeedback('El archivo no tiene un formato válido.');
+  };
+  reader.readAsText(file);
+}
+
+exportarDatosButton.addEventListener('click', exportarDatos);
+
+importarDatosButton.addEventListener('click', () => {
+  archivoImportar.click();
+});
+
+archivoImportar.addEventListener('change', () => {
+  importarDatos(archivoImportar.files[0]);
+  archivoImportar.value = '';
+});
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
