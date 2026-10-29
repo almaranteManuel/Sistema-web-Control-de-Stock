@@ -243,6 +243,11 @@ tr.faltante:hover td {
   background: #dc2626;
 }
 
+/* HU10: botón de compra destacado en verde */
+.buy-button {
+  background: #16a34a;
+}
+
 .quantity-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

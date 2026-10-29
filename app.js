@@ -4,7 +4,8 @@
    HU5: alerta faltantes (stock <= mínimo) — resalta en rojo + contador.
    HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
    HU7: lista de compras automática generada desde los faltantes.
-   HU9: deletes a product after asking for confirmation. */
+   HU9: deletes a product after asking for confirmation.
+   HU10: marcar comprado repone el stock del faltante a su mínimo. */
 
 const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
@@ -140,8 +141,40 @@ function renderShoppingList() {
       row.appendChild(cell);
     });
 
+    const actionsCell = document.createElement('td');
+    actionsCell.className = 'compra-acciones';
+
+    const buyButton = document.createElement('button');
+    buyButton.type = 'button';
+    buyButton.className = 'quantity-button buy-button';
+    buyButton.dataset.action = 'buy';
+    buyButton.dataset.id = item.id;
+    buyButton.textContent = 'Comprar';
+    buyButton.title = `Marcar comprado a ${item.nombre}`;
+
+    actionsCell.appendChild(buyButton);
+    row.appendChild(actionsCell);
+
     tablaComprasBody.appendChild(row);
   }
+}
+
+/* HU10: comprar repone el stock del faltante a su mínimo (cantidad += comprar);
+   al volver al mínimo deja de aparecer en la lista de compras. */
+function markAsBought(productId) {
+  const products = loadProducts();
+  const product = products.find((item) => item.id === productId);
+
+  if (!product) {
+    return;
+  }
+
+  product.cantidad += product.minimo - product.cantidad;
+  saveProducts(products);
+  renderList();
+  showFeedback(`"${product.nombre}" comprado. Stock actualizado.`);
+}
+
 /* HU5: un producto está faltante cuando su stock llega o baja del mínimo. */
 function isLowStock(product) {
   return product.cantidad <= product.minimo;
@@ -421,6 +454,15 @@ tablaBody.addEventListener('click', (event) => {
 
   const change = button.dataset.action === 'add' ? 1 : -1;
   changeQuantity(button.dataset.id, change);
+});
+
+tablaComprasBody.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-action="buy"]');
+  if (!button) {
+    return;
+  }
+
+  markAsBought(button.dataset.id);
 });
 
 renderList();
