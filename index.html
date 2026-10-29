@@ -35,6 +35,18 @@
       </div>
     </section>
 
+    <section id="datos" class="card">
+      <h2>Datos</h2>
+      <p class="datos-descripcion">
+        Los datos se guardan automáticamente en el navegador (localStorage).
+      </p>
+      <div class="datos-acciones">
+        <button id="exportar-datos" type="button">Exportar JSON</button>
+        <button id="importar-datos" type="button">Importar JSON</button>
+        <input type="file" id="archivo-importar" accept="application/json,.json" hidden />
+      </div>
+    </section>
+
     <section class="card">
       <h2 id="titulo-formulario">Alta de producto</h2>
       <form id="form-producto" novalidate>
