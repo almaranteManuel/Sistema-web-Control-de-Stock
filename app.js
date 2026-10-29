@@ -5,7 +5,8 @@
    HU6: alerta vencimiento próximo 7 días (resalta amarillo + contador).
    HU7: lista de compras automática generada desde los faltantes.
    HU9: deletes a product after asking for confirmation.
-   HU10: marcar comprado repone el stock del faltante a su mínimo. */
+   HU10: marcar comprado repone el stock del faltante a su mínimo.
+   HU11: resumen/dashboard con tarjetas de números reales. */
 
 const STORAGE_KEY = 'stock:productos';
 const filtroNombre = document.querySelector('#filtro-nombre');
@@ -26,6 +27,10 @@ const contadorVencimientos = document.querySelector('#contador-vencimientos');
 const contadorVencimientoSingular = document.querySelector('#contador-vencimiento');
 const alertaFaltantes = document.querySelector('#alerta-faltantes');
 const contadorFaltantes = document.querySelector('#contador-faltantes');
+const resumenProductos = document.querySelector('#resumen-productos');
+const resumenUnidades = document.querySelector('#resumen-unidades');
+const resumenFaltantes = document.querySelector('#resumen-faltantes');
+const resumenVencidos = document.querySelector('#resumen-vencidos');
 let editingProductId = null;
 
 function loadProducts() {
@@ -247,6 +252,34 @@ function leaveEditMode() {
   cancelEditButton.hidden = true;
 }
 
+/* HU11: tarjetas del resumen con números reales calculados de los productos. */
+function renderResumen() {
+  const products = loadProducts();
+
+  const totalProductos = products.length;
+  const totalUnidades = products.reduce(
+    (sum, item) => sum + item.cantidad,
+    0
+  );
+  const totalFaltantes = products.filter((item) => isLowStock(item)).length;
+  const totalVencidos = products.filter((item) =>
+    isExpiringSoon(item.vencimiento)
+  ).length;
+
+  if (resumenProductos) {
+    resumenProductos.textContent = String(totalProductos);
+  }
+  if (resumenUnidades) {
+    resumenUnidades.textContent = String(totalUnidades);
+  }
+  if (resumenFaltantes) {
+    resumenFaltantes.textContent = String(totalFaltantes);
+  }
+  if (resumenVencidos) {
+    resumenVencidos.textContent = String(totalVencidos);
+  }
+}
+
 function renderList() {
   const products = loadProducts();
 
@@ -357,6 +390,7 @@ function renderList() {
   }
 
   renderShoppingList();
+  renderResumen();
 }
 
 
