@@ -90,8 +90,6 @@ Se recomienda exportar periódicamente el archivo `stock-productos.json`. La imp
 - No hay autenticación, multiusuario, permisos ni sincronización en la nube.
 - No hay backend ni base de datos.
 - No incluye lector de código de barras, facturación ni aplicación móvil nativa.
-- El control de versiones del MVP se identifica como `MVP-0.1.0` en la documentación; todavía no hay una release/tag formal publicada.
-- La licencia aún no fue declarada en GitHub. Hasta que se agregue una, el código no debe redistribuirse como si tuviera una licencia permisiva.
 
 ## Equipo
 
