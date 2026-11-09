@@ -1,144 +1,98 @@
-# Control de Stock Despensa / Pequeño Comercio
-## GDS - TUP - Trabajo Final Integrador (Plan)
+# Sistema web de control de stock
 
-**Integrantes:** Vinzon Alan, Ansa Santiago, Almarante Manuel, Saenz Federico
-**Stack:** HTML + CSS + JS + localStorage (sin backend) + GitHub + GitHub Projects
-**Fecha objetivo interna:** 05/11/2026 (cierre oficial aula: 10/11/2026)
+[![Estado de compilación](https://img.shields.io/badge/build-manual-lightgrey?logo=github)](https://github.com/almaranteManuel/Sistema-web-Control-de-Stock)
+[![Versión](https://img.shields.io/badge/version-MVP--0.1.0-blue)](https://github.com/almaranteManuel/Sistema-web-Control-de-Stock/commits/main)
+[![Licencia](https://img.shields.io/badge/license-no%20declarada-lightgrey)](https://github.com/almaranteManuel/Sistema-web-Control-de-Stock)
 
----
+Aplicación web sencilla para registrar y consultar el stock de una despensa o pequeño comercio. Está pensada para encargados de compras, familias y empleados que necesitan saber qué productos hay disponibles, detectar faltantes y anticipar vencimientos sin depender de anotaciones en papel o mensajes. Resuelve el control cotidiano de inventario con una interfaz responsive, persistencia local y una lista de compras automática.
 
-## 1. Problema y propuesta
+> **Estado del proyecto:** MVP funcional. Es un sitio estático: no requiere backend, base de datos, login ni instalación de paquetes. El repositorio todavía no declara una licencia formal ni un pipeline de CI; por eso las insignias lo indican explícitamente.
 
-**Problema:** En hogares y kioscos chicos no se sabe qué hay en stock. Se compra duplicado, faltan productos clave y se vencen alimentos por falta de control. Hoy se maneja de memoria, papelitos o WhatsApp.
+## Funcionalidades
 
-**Propuesta:** Web simple para cargar productos, ver stock, descontar uso / sumar compra, alertar faltantes y vencimientos próximos, y generar lista de compras automática.
+- Alta, edición y eliminación de productos.
+- Datos de producto: nombre, categoría, cantidad, stock mínimo y vencimiento.
+- Búsqueda por nombre y filtro por categoría.
+- Incremento o descuento de unidades, sin permitir stock negativo.
+- Alertas cuando el stock es menor o igual al mínimo.
+- Alerta de productos que vencen dentro de los próximos 7 días.
+- Resumen de productos, unidades, faltantes y próximos vencimientos.
+- Lista de compras automática para recuperar el stock mínimo.
+- Persistencia automática en `localStorage`.
+- Exportación e importación de datos en formato JSON.
+- Diseño responsive para pantallas pequeñas y grandes.
 
-**Responde:**
-- ¿Qué vamos a desarrollar? Control mínimo de stock con alertas.
-- ¿Para quién? Encargado de compras + quien usa la despensa.
-- ¿Qué problema resuelve? Olvidos, faltantes y vencidos.
+## Requisitos
 
-**Beneficio esperado:** menos quiebres de stock, menos vencidos, lista de compras en 1 clic.
+- Navegador moderno con soporte para JavaScript, `localStorage`, `FileReader`, `Blob` y `crypto.randomUUID`.
+- Python 3 para levantar un servidor local (recomendado). No se requiere Node.js, npm ni una base de datos.
+- Git, únicamente si se desea clonar el repositorio desde la terminal.
 
-## 2. Usuarios
+## Instalación y ejecución
 
-1. **Encargado de compras:** carga, edita, ve alertas, genera lista.
-2. **Usuario hogareño / empleado:** consulta, descuenta uso, marca comprado.
+### Opción recomendada: clonar y servir localmente
 
-Sin login real en MVP (fuera de alcance). Rol simulado con selector simple si hace falta.
+```bash
+git clone https://github.com/almaranteManuel/Sistema-web-Control-de-Stock.git
+cd Sistema-web-Control-de-Stock
+python3 -m http.server 8000
+```
 
-## 3. Alcance
+Luego abrir [http://localhost:8000](http://localhost:8000) en el navegador.
 
-**Incluye:**
-- ABM productos (nombre, categoría, cantidad, stock mínimo, vencimiento)
-- Lista, búsqueda y filtros
-- Movimientos sumar / descontar
-- Alertas faltante y vencimiento 7 días
-- Lista de compras automática + marcar comprado
-- Resumen / dashboard + persistencia localStorage + export/import JSON
+Para detener el servidor, volver a la terminal y presionar `Ctrl+C`.
 
-**Queda fuera (explícito para Correctia):**
-- Login real / multiusuario / permisos
-- Código de barras / QR
-- Backend / DB real / sincronización nube
-- Pagos, facturación
-- App móvil nativa
+### Ejecución sin clonar
 
-**Limitaciones:** 4 personas, desde cero, ~3 semanas útiles, solo front, sin backend, tiempo parcial por parciales.
+También se puede descargar el repositorio como ZIP, descomprimirlo y abrir `index.html` con un navegador moderno. El servidor local es preferible porque reproduce mejor el entorno de una aplicación web y facilita las pruebas desde otros dispositivos de la red.
 
-**Convención de diseño (mobile-first):** toda la UI se construye responsive mobile-first: estilos base pensados para celular y media queries que mejoran progresivamente pantallas más grandes. Cada HU se entrega responsiva desde su implementación; HU13 queda como pulido (modo oscuro y refinos), no como base del responsive.
+## Uso básico
 
-## 4. Backlog (13 ítems)
+1. En **Alta de producto**, completar nombre, categoría, cantidad, stock mínimo y fecha de vencimiento.
+2. Presionar **Guardar producto**. El producto aparecerá en la tabla y los indicadores se actualizarán.
+3. Usar `+` o `−` para registrar compras o consumos.
+4. Buscar por nombre o seleccionar una categoría para filtrar la tabla.
+5. Revisar las alertas de faltantes y vencimientos próximos.
+6. Desde **Lista de compras**, presionar **Marcar comprado** para reponer automáticamente la cantidad sugerida.
+7. Usar **Exportar JSON** para descargar una copia y **Importar JSON** para restaurarla en otro navegador o sesión.
 
-Escala: Baja=2h / Media=5h / Alta=8h. Total estimado: 57h.
+### Ejemplo de escenario
 
-| ID | Historia | Prioridad | Est. | Estado inicial | Criterio Done |
-|----|----------|-----------|------|----------------|---------------|
-| HU1 | Como encargado quiero alta de producto (nombre, categoría, cantidad, mínimo, vencimiento) | Alta | 5h | Pendiente | Valida campos, guarda, aparece en lista |
-| HU2 | Como usuario quiero ver lista de stock | Alta | 2h | Pendiente | Tabla carga desde storage |
-| HU3 | Como usuario quiero buscar/filtrar por nombre/categoría | Alta | 2h | Pendiente | Filtro funciona en vivo |
-| HU4 | Como usuario quiero sumar/descontar cantidad | Alta | 5h | Finalizada | No permite negativo, actualiza vista |
-| HU5 | Como encargado quiero alerta faltantes (stock<=mínimo) | Alta | 5h | Pendiente | Resalta en rojo + contador |
-| HU6 | Como encargado quiero alerta vencimiento próximo 7 días | Alta | 5h | Pendiente | Resalta amarillo + contador |
-| HU7 | Como encargado quiero lista de compras automática | Media | 5h | Pendiente | Genera desde faltantes |
-| HU8 | Como usuario quiero editar producto | Media | 2h | Pendiente | Edita y persiste |
-| HU9 | Como encargado quiero eliminar con confirmación | Baja | 2h | Pendiente | Pide confirmar, borra |
-| HU10 | Como usuario quiero marcar comprado (vuelve a stock) | Media | 5h | Pendiente | Descuenta de lista, suma a stock |
-| HU11 | Como encargado quiero resumen (totales, faltantes, vencidos) | Media | 8h | Pendiente | Tarjetas con números reales |
-| HU12 | Como usuario quiero persistencia localStorage + export/import JSON | Alta | 8h | Pendiente | Recarga mantiene datos, JSON round-trip |
-| HU13 | Como usuario quiero responsive / modo oscuro | Baja | 3h | Pendiente | Usable en celu (reserva, puede quedar pendiente) |
+Para controlar harina, cargar:
 
-> HU13 se deja como pendiente planificado para evidenciar recorte.
+| Campo | Valor |
+|---|---|
+| Nombre | Harina 000 |
+| Categoría | Comestibles |
+| Cantidad | 2 |
+| Stock mínimo | 5 |
+| Vencimiento | una fecha futura |
 
-## 5. Organización y prioridades
+El sistema marcará el producto como faltante porque `2 <= 5` y sugerirá comprar 3 unidades para volver al mínimo. Si la fecha está dentro de los próximos 7 días, también mostrará la alerta de vencimiento.
 
-- **Alta:** sin esto no hay producto (HU1,2,3,4,5,6,12).
-- **Media:** aporta valor, va a Iteración 2 (HU7,8,10,11).
-- **Baja:** sacrificable (HU9,13).
+## Persistencia y respaldo
 
-Justificación 1 línea para PDF: priorizamos evitar quiebres y pérdida de datos antes que cosmética.
+Los productos se guardan automáticamente en el almacenamiento local del navegador bajo la clave `stock:productos`. Por tratarse de `localStorage`, los datos quedan asociados al navegador y al dispositivo; no se sincronizan entre usuarios ni se envían a un servidor.
 
-## 6. Estimación
+Se recomienda exportar periódicamente el archivo `stock-productos.json`. La importación reemplaza los datos actuales por los productos contenidos en el archivo seleccionado, por lo que conviene realizar un respaldo antes de importar.
 
-Método: juicio experto + talles relativos. No se espera exactitud.
-Total inicial: 57h. Al cierre comparar Estimado vs Real por HU y total para indicador de desvío.
+## Estructura del proyecto
 
-## 7. Plan en 2 iteraciones
+```text
+.
+├── index.html   # estructura de la interfaz
+├── style.css    # estilos responsive
+└── app.js       # validaciones, inventario, alertas y persistencia
+```
 
-**Iteración 1 - Base usable:** HU1, HU2, HU3, HU4, HU8, HU9
-Propuesto: ABM mínimo navegable. Terminado esperado: 6/6. Pendiente: resto.
+## Limitaciones conocidas
 
-**Iteración 2 - Valor gestión:** HU5, HU6, HU7, HU10, HU11, HU12
-Propuesto: alertas + lista + resumen + persistencia. Terminado esperado: 6/7 (HU13 queda pendiente a propósito).
+- No hay autenticación, multiusuario, permisos ni sincronización en la nube.
+- No hay backend ni base de datos.
+- No incluye lector de código de barras, facturación ni aplicación móvil nativa.
+- El control de versiones del MVP se identifica como `MVP-0.1.0` en la documentación; todavía no hay una release/tag formal publicada.
+- La licencia aún no fue declarada en GitHub. Hasta que se agregue una, el código no debe redistribuirse como si tuviera una licencia permisiva.
 
-Cada iteración documentar: propuesto / seleccionado / quiénes / terminado / pendiente.
+## Equipo
 
-## 8. Seguimiento y registro
-
-- **Tablero:** GitHub Projects con columnas PENDIENTE → EN PROCESO → FINALIZADA. Captura al fin de I1 e I2.
-- **Repo:** `index.html / style.css / app.js / README.md`. 2-3 commits por persona por iteración. Captura historial + diff para PDF.
-- **DoD:** funciona, cumple HU, probado por otro integrante, sin errores graves, integrado a main.
-
-## 9. Riesgos (4 mínimos)
-
-| Riesgo | Qué provoca | Mitigación |
-|--------|-------------|------------|
-| R1 Falta de tiempo por parciales | Retraso I2 | Recortar HU13, repartir parejo |
-| R2 Dificultad JS/localStorage | Bugs persistencia | Prototipo temprano HU12 parcial en I1, pair programming |
-| R3 Descoordinación horarios x4 | Bloqueos | Reunión corta 2x semana + tablero al día |
-| R4 Alcance se agranda (login/back) | No terminar | Congelar alcance, lista explícita Fuera |
-
-Al final indicar si ocurrió y cómo se resolvió.
-
-## 10. Cambio previsto (1 mínimo)
-
-Candidato: `Vencimiento con fecha exacta obligatoria → rango opcional + alerta 7/30 días`.
-Formato PDF: QUÉ CAMBIÓ → POR QUÉ (era engorroso, frenaba carga) → QUÉ DECIDIMOS.
-
-## 11. Indicadores (2 mínimos)
-
-- I-A: previstas vs terminadas (ej. 13 previstas, 12 terminadas = 92%).
-- I-B: desvío estimación (estimado 57h vs real XXh, % desvío por HU).
-
-Responder: ¿cómo nos fue vs lo planificado?
-
-## 12. DERA x4 (plantilla)
-
-Formato: DECISIÓN → EVIDENCIA → RESULTADO → APRENDIZAJE.
-Candidatos:
-1. localStorage en vez de backend.
-2. Congelar login.
-3. Tabla simple antes que dashboard.
-4. Trabajo por parejas en HU4/HU12.
-
-## 13. Faltantes para cerrar (checklist ejecución)
-
-- [ ] Crear repo + Projects + invitaciones x4
-- [ ] Ejecutar I1 + capturas tablero + commits
-- [ ] Ejecutar I2 + capturas tablero + commits
-- [ ] Medir horas reales por HU
-- [ ] Capturas app funcionando (lista, alerta, resumen)
-- [ ] Armar PDF 20 puntos en orden
-- [ ] Grabar video 2-3 min c/u + link en PDF
-- [ ] Declarar uso IA + verificación
-- [ ] Entregar antes del 10/11/2026
+Vinzon Alan · Ansa Santiago · Almarante Manuel · Saenz Federico
